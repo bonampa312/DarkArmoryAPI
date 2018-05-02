@@ -4,6 +4,8 @@ var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
 
+var DS1_WEAPONS_COLLECTION = "ds1_weapons";
+var DS2_WEAPONS_COLLECTION = "ds2_weapons";
 var DS3_WEAPONS_COLLECTION = "ds3_weapons";
 
 var app = express();
@@ -39,11 +41,38 @@ function handleError(res, reason, message, code) {
   res.status(code || 500).json({"error": message});
 }
 
+/*
+ *            WEAPONS
+*/
 
-/*  "/ds3/weapons"
- *    GET: finds all ds3 weapons
- *    POST: creates a new ds3 weapons
- */
+/*
+ *    GET: finds all weapons
+ *    POST: creates a new weapon
+ * 
+ *    Dark Souls 1: "/ds1/weapons"
+ *    Dark Souls 2: "/ds2/weapons"
+ *    Dark Souls 3: "/ds3/weapons"
+*/
+
+app.get("/ds1/weapons", function(req, res) {
+  db.collection(DS1_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 weapons.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds2/weapons", function(req, res) {
+  db.collection(DS2_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 weapons.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
 
 app.get("/ds3/weapons", function(req, res) {
   db.collection(DS3_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
@@ -55,12 +84,40 @@ app.get("/ds3/weapons", function(req, res) {
   });
 });
 
+app.post("/ds1/weapons", function(req, res) {
+  var newWeapon = req.body
+  if (!validatePostFields(newWeapon)) {
+   handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+  }
+  db.collection(DS1_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+     if (err) {
+       handleError(res, err.message, "Failed to create new dark souls 1 weapon.");
+     } else {
+       res.status(201).json(doc.ops[0]);
+     }
+   });
+ });
+
+app.post("/ds2/weapons", function(req, res) {
+  var newWeapon = req.body
+  if (!validatePostFields(newWeapon) || !(newWeapon.effect || newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
+    handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+  }
+  db.collection(DS2_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 2 weapon.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
 app.post("/ds3/weapons", function(req, res) {
- var newWeapon = req.body
- if (!(newWeapon.name || newWeapon.weight || newWeapon.image_url || newWeapon.description || newWeapon.requeriments.strength || newWeapon.requeriments.dexterity || newWeapon.requeriments.intelligence ||  newWeapon.requeriments.faith)) {
+  var newWeapon = req.body
+  if (!validatePostFields(newWeapon) || !(newWeapon.skill.name || newWeapon.skill.description || newWeapon.base_damage.dark || newWeapon.aditional_damage.bleed || newWeapon.aditional_damage.poison || newWeapon.aditional_damage.frost || newWeapon.defenses.dark)) {
   handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
- }
- db.collection(DS3_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+  }
+  db.collection(DS3_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 3 weapon.");
     } else {
@@ -69,11 +126,35 @@ app.post("/ds3/weapons", function(req, res) {
   });
 });
 
-/*  "/ds3/weapons/:id"
- *    GET: find ds3 weapon by id
- *    PUT: update ds3 weapon by id
- *    DELETE: deletes ds3 weapon by id
+/*
+ *    GET(by ID): finds a weapon by id
+ *    PUT: update a weapon by id
+ *    DELETE: deletes a weapon by id
+ * 
+ *    Dark Souls 1: "/ds1/weapons/:id"
+ *    Dark Souls 2: "/ds2/weapons/:id"
+ *    Dark Souls 3: "/ds3/weapons/:id"
  */
+
+app.get("/ds1/weapons/:id", function(req, res) {
+  db.collection(DS1_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 weapon");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds2/weapons/:id", function(req, res) {
+  db.collection(DS2_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 weapon");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
 
 app.get("/ds3/weapons/:id", function(req, res) {
   db.collection(DS3_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
@@ -81,6 +162,32 @@ app.get("/ds3/weapons/:id", function(req, res) {
       handleError(res, err.message, "Failed to get dark souls 3 weapon");
     } else {
       res.status(200).json(doc);
+    }
+  });
+});
+
+app.put("/ds1/weapons/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS1_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 1 weapon");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds2/weapons/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS2_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 2 weapon");
+    } else {
+      res.status(204).end();
     }
   });
 });
@@ -98,6 +205,26 @@ app.put("/ds3/weapons/:id", function(req, res) {
   });
 });
 
+app.delete("/ds1/weapons/:id", function(req, res) {
+    db.collection(DS1_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 1 weapon");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds2/weapons/:id", function(req, res) {
+    db.collection(DS2_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 2 weapon");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
 app.delete("/ds3/weapons/:id", function(req, res) {
     db.collection(DS3_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
@@ -107,3 +234,37 @@ app.delete("/ds3/weapons/:id", function(req, res) {
     }
   });
 });
+
+// Validations
+
+function validatePostFields(newWeapon) {
+  if(!(newWeapon.name ||
+    newWeapon.weapon_type ||
+    newWeapon.weight ||
+    newWeapon.description ||
+    newWeapon.image_url ||
+    newWeapon.locations ||
+    newWeapon.stability ||
+    newWeapon.attack_type ||
+    newWeapon.critical ||
+    newWeapon.base_damage.physical ||
+    newWeapon.base_damage.magic ||
+    newWeapon.base_damage.lightning ||
+    newWeapon.base_damage.fire ||
+    newWeapon.requeriments.strength ||
+    newWeapon.requeriments.dexterity ||
+    newWeapon.requeriments.intelligence ||
+    newWeapon.requeriments.faith ||
+    newWeapon.bonuses.strength ||
+    newWeapon.bonuses.dexterity ||
+    newWeapon.bonuses.intelligence ||
+    newWeapon.bonuses.faith ||
+    newWeapon.defenses.physical ||
+    newWeapon.defenses.magic ||
+    newWeapon.defenses.lightning ||
+    newWeapon.defenses.fire)) {
+      return false
+    } else {
+      return true
+    }
+}
