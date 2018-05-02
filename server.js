@@ -46,6 +46,13 @@ function handleError(res, reason, message, code) {
  */
 
 app.get("/ds3/weapons", function(req, res) {
+  db.collection(DS3_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 weapons.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
 });
 
 app.post("/ds3/weapons", function(req, res) {
@@ -69,11 +76,34 @@ app.post("/ds3/weapons", function(req, res) {
  */
 
 app.get("/ds3/weapons/:id", function(req, res) {
+  db.collection(DS3_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 weapon");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
 });
 
 app.put("/ds3/weapons/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS3_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 3 weapon");
+    } else {
+      res.status(204).end();
+    }
+  });
 });
 
 app.delete("/ds3/weapons/:id", function(req, res) {
+    db.collection(DS3_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 3 weapon");
+    } else {
+      res.status(204).end();
+    }
+  });
 });
-
