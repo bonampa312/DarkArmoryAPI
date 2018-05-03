@@ -446,7 +446,9 @@ function validatePostRingsFields(newRing) {
     newRing.effect ||
     newRing.game
   )) {
-    
+    return false
+  } else {
+    return true
   }
 }
 
