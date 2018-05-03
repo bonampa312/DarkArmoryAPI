@@ -88,7 +88,7 @@ app.get("/ds3/weapons", function(req, res) {
 app.post("/ds1/weapons", function(req, res) {
   var newWeapon = req.body
   if (!validatePostWeaponsFields(newWeapon)) {
-   handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+   handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 weapon.", 400);
   }
   db.collection(DS1_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
@@ -102,7 +102,7 @@ app.post("/ds1/weapons", function(req, res) {
 app.post("/ds2/weapons", function(req, res) {
   var newWeapon = req.body
   if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.effect || newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
-    handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+    handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 weapon.", 400);
   }
   db.collection(DS2_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
@@ -116,7 +116,7 @@ app.post("/ds2/weapons", function(req, res) {
 app.post("/ds3/weapons", function(req, res) {
   var newWeapon = req.body
   if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.skill.name || newWeapon.skill.description || newWeapon.base_damage.dark || newWeapon.aditional_damage.bleed || newWeapon.aditional_damage.poison || newWeapon.aditional_damage.frost || newWeapon.defenses.dark)) {
-  handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+  handleError(res, "Invalid weapon input", "Must provide requeried data for ds3 weapon.", 400);
   }
   db.collection(DS3_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
@@ -282,7 +282,7 @@ app.get("/ds3/rings", function(req, res) {
 app.post("/ds1/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing)) {
-   handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+   handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 ring.", 400);
   }
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
@@ -296,7 +296,7 @@ app.post("/ds1/rings", function(req, res) {
 app.post("/ds2/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing))) {
-    handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+    handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 ring.", 400);
   }
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
@@ -310,7 +310,7 @@ app.post("/ds2/rings", function(req, res) {
 app.post("/ds3/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing)) {
-    handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
+    handleError(res, "Invalid weapon input", "Must provide requeried data for ds3 ring.", 400);
   }
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
@@ -334,7 +334,7 @@ app.post("/ds3/rings", function(req, res) {
 app.get("/ds1/rings/:id", function(req, res) {
   db.collection(DS_RINGS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to get dark souls 1 weapon");
+      handleError(res, err.message, "Failed to get dark souls 1 ring");
     } else {
       res.status(200).json(doc);
     }
@@ -344,7 +344,7 @@ app.get("/ds1/rings/:id", function(req, res) {
 app.get("/ds2/rings/:id", function(req, res) {
   db.collection(DS_RINGS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to get dark souls 2 weapon");
+      handleError(res, err.message, "Failed to get dark souls 2 ring");
     } else {
       res.status(200).json(doc);
     }
@@ -354,7 +354,7 @@ app.get("/ds2/rings/:id", function(req, res) {
 app.get("/ds3/rings/:id", function(req, res) {
   db.collection(DS_RINGS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to get dark souls 3 weapon");
+      handleError(res, err.message, "Failed to get dark souls 3 ring");
     } else {
       res.status(200).json(doc);
     }
@@ -367,7 +367,7 @@ app.put("/ds1/rings/:id", function(req, res) {
 
   db.collection(DS_RINGS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to update dark souls 1 weapon");
+      handleError(res, err.message, "Failed to update dark souls 1 ring");
     } else {
       res.status(204).end();
     }
@@ -380,7 +380,7 @@ app.put("/ds2/rings/:id", function(req, res) {
 
   db.collection(DS_RINGS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to update dark souls 2 weapon");
+      handleError(res, err.message, "Failed to update dark souls 2 ring");
     } else {
       res.status(204).end();
     }
@@ -393,7 +393,7 @@ app.put("/ds3/rings/:id", function(req, res) {
 
   db.collection(DS_RINGS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
-      handleError(res, err.message, "Failed to update dark souls 3 weapon");
+      handleError(res, err.message, "Failed to update dark souls 3 ring");
     } else {
       res.status(204).end();
     }
@@ -403,7 +403,7 @@ app.put("/ds3/rings/:id", function(req, res) {
 app.delete("/ds1/rings/:id", function(req, res) {
     db.collection(DS_RINGS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
-      handleError(res, err.message, "Failed to delete dark souls 1 weapon");
+      handleError(res, err.message, "Failed to delete dark souls 1 ring");
     } else {
       res.status(204).end();
     }
@@ -413,7 +413,7 @@ app.delete("/ds1/rings/:id", function(req, res) {
 app.delete("/ds2/rings/:id", function(req, res) {
     db.collection(DS_RINGS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
-      handleError(res, err.message, "Failed to delete dark souls 2 weapon");
+      handleError(res, err.message, "Failed to delete dark souls 2 ring");
     } else {
       res.status(204).end();
     }
@@ -423,7 +423,7 @@ app.delete("/ds2/rings/:id", function(req, res) {
 app.delete("/ds3/rings/:id", function(req, res) {
     db.collection(DS_RINGS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
-      handleError(res, err.message, "Failed to delete dark souls 3 weapon");
+      handleError(res, err.message, "Failed to delete dark souls 3 ring");
     } else {
       res.status(204).end();
     }
