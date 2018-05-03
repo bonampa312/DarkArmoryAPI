@@ -295,7 +295,7 @@ app.post("/ds1/rings", function(req, res) {
 
 app.post("/ds2/rings", function(req, res) {
   var newRing = req.body
-  if (!validatePostRingsFields(newRing) || !(newWeapon.effect || newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
+  if (!validatePostRingsFields(newRing))) {
     handleError(res, "Invalid weapon input", "Must provide requeried data.", 400);
   }
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
