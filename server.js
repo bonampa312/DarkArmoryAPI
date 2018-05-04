@@ -260,7 +260,7 @@ app.get("/ds1/rings", function(req, res) {
 });
 
 app.get("/ds2/rings", function(req, res) {
-  db.collection(DS_RINGS_COLLECTION).find({game: "2"}).project({'name':1, '_id':1, 'effect':1, 'location':0}).toArray(function(err, docs) {
+  db.collection(DS_RINGS_COLLECTION).find({game: "2"}).project({'name':1, '_id':1, 'effect':1}).toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 rings.");
     } else {
