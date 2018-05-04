@@ -295,7 +295,7 @@ app.post("/ds1/rings", function(req, res) {
 
 app.post("/ds2/rings", function(req, res) {
   var newRing = req.body
-  if (!validatePostRingsFields(newRing))) {
+  if (!validatePostRingsFields(newRing)) {
     handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 ring.", 400);
   }
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
