@@ -55,9 +55,9 @@ function handleError(res, reason, message, code) {
 
 app.get("/ds1/weapons", function(req, res) {
   db.collection(DS_WEAPONS_COLLECTION)
-  .find({game: "1"})
+  .find({game: "1"}).
   project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
-  .toArray(function(err, docs) {
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 weapons.");
     } else {
