@@ -263,7 +263,10 @@ app.get("/ds1/rings", function(req, res) {
 });
 
 app.get("/ds2/rings", function(req, res) {
-  db.collection(DS_RINGS_COLLECTION).find({game: "2"}).project({'name':1, '_id':1, 'effect':1}).toArray(function(err, docs) {
+  db.collection(DS_RINGS_COLLECTION).
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1}).
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 rings.");
     } else {
@@ -273,7 +276,10 @@ app.get("/ds2/rings", function(req, res) {
 });
 
 app.get("/ds3/rings", function(req, res) {
-  db.collection(DS_RINGS_COLLECTION).find({game: "3"}).toArray(function(err, docs) {
+  db.collection(DS_RINGS_COLLECTION)..
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1}).
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 rings.");
     } else {
@@ -287,7 +293,7 @@ app.post("/ds1/rings", function(req, res) {
   if (!validatePostRingsFields(newRing)) {
    handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 ring.", 400);
   }
-  newRing.set("game","1")
+  newRing["game"] = "1"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 1 ring.");
@@ -302,6 +308,7 @@ app.post("/ds2/rings", function(req, res) {
   if (!validatePostRingsFields(newRing)) {
     handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 ring.", 400);
   }
+  newRing["game"] = "2"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 2 ring.");
@@ -316,6 +323,7 @@ app.post("/ds3/rings", function(req, res) {
   if (!validatePostRingsFields(newRing)) {
     handleError(res, "Invalid weapon input", "Must provide requeried data for ds3 ring.", 400);
   }
+  newRing["game"] = "3"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 3 ring.");
