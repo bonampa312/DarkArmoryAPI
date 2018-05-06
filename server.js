@@ -250,7 +250,10 @@ app.delete("/ds3/weapons/:id", function(req, res) {
 */
 
 app.get("/ds1/rings", function(req, res) {
-  db.collection(DS_RINGS_COLLECTION).find({game: "1"}).toArray(function(err, docs) {
+  db.collection(DS_RINGS_COLLECTION).
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1}).
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 rings.");
     } else {
@@ -284,6 +287,7 @@ app.post("/ds1/rings", function(req, res) {
   if (!validatePostRingsFields(newRing)) {
    handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 ring.", 400);
   }
+  newRing.set("game","1")
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 1 ring.");
@@ -443,8 +447,7 @@ function validatePostRingsFields(newRing) {
     newRing.location ||
     newRing.weight ||
     newRing.description ||
-    newRing.effect ||
-    newRing.game
+    newRing.effect
   )) {
     return false
   } else {
