@@ -4,7 +4,7 @@ angular.module("DarkArmoryAPI", ['ngRoute'])
             .when("/", {
                 templateUrl: "home.html",
                 controller: "HomeController"
-            })
+            })/*
             .when("/ds2/weapons", {
                 redirectTo: "/ds2/weapons"
             })
