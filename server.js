@@ -264,7 +264,7 @@ app.get("/ds1/rings", function(req, res) {
 
 app.get("/ds2/rings", function(req, res) {
   db.collection(DS_RINGS_COLLECTION).
-  find({game: "1"}).
+  find({game: "2"}).
   project({"_id":1, "name":1, "image_url":1,"weight":1}).
   toArray(function(err, docs) {
     if (err) {
@@ -277,7 +277,7 @@ app.get("/ds2/rings", function(req, res) {
 
 app.get("/ds3/rings", function(req, res) {
   db.collection(DS_RINGS_COLLECTION).
-  find({game: "1"}).
+  find({game: "3"}).
   project({"_id":1, "name":1, "image_url":1,"weight":1}).
   toArray(function(err, docs) {
     if (err) {
