@@ -4,9 +4,7 @@ var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
 
-var DS1_WEAPONS_COLLECTION = "ds1_weapons";
-var DS2_WEAPONS_COLLECTION = "ds2_weapons";
-var DS3_WEAPONS_COLLECTION = "ds3_weapons";
+var DS_WEAPONS_COLLECTION = "weapons";
 var DS_RINGS_COLLECTION = "rings";
 
 var app = express();
@@ -56,7 +54,10 @@ function handleError(res, reason, message, code) {
 */
 
 app.get("/ds1/weapons", function(req, res) {
-  db.collection(DS1_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+  db.collection(DS_WEAPONS_COLLECTION)
+  .find({game: "1"})
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  .toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 weapons.");
     } else {
@@ -66,7 +67,10 @@ app.get("/ds1/weapons", function(req, res) {
 });
 
 app.get("/ds2/weapons", function(req, res) {
-  db.collection(DS2_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+  db.collection(DS_WEAPONS_COLLECTION).
+  find({game: "2"}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 weapons.");
     } else {
@@ -76,7 +80,10 @@ app.get("/ds2/weapons", function(req, res) {
 });
 
 app.get("/ds3/weapons", function(req, res) {
-  db.collection(DS3_WEAPONS_COLLECTION).find({}).toArray(function(err, docs) {
+  db.collection(DS_WEAPONS_COLLECTION).
+  find({game: "3"}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 weapons.");
     } else {
@@ -90,7 +97,8 @@ app.post("/ds1/weapons", function(req, res) {
   if (!validatePostWeaponsFields(newWeapon)) {
    handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 weapon.", 400);
   }
-  db.collection(DS1_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+  newWeapon["game"] = "1"
+  db.collection(DS_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 1 weapon.");
     } else {
@@ -104,7 +112,8 @@ app.post("/ds2/weapons", function(req, res) {
   if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.effect || newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
     handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 weapon.", 400);
   }
-  db.collection(DS2_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+  newWeapon["game"] = "2"
+  db.collection(DS_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 2 weapon.");
     } else {
@@ -118,7 +127,8 @@ app.post("/ds3/weapons", function(req, res) {
   if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.skill.name || newWeapon.skill.description || newWeapon.base_damage.dark || newWeapon.aditional_damage.bleed || newWeapon.aditional_damage.poison || newWeapon.aditional_damage.frost || newWeapon.defenses.dark)) {
   handleError(res, "Invalid weapon input", "Must provide requeried data for ds3 weapon.", 400);
   }
-  db.collection(DS3_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
+  newWeapon["game"] = "3"
+  db.collection(DS_WEAPONS_COLLECTION).insertOne(newWeapon,function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new dark souls 3 weapon.");
     } else {
@@ -138,7 +148,7 @@ app.post("/ds3/weapons", function(req, res) {
  */
 
 app.get("/ds1/weapons/:id", function(req, res) {
-  db.collection(DS1_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 weapon");
     } else {
@@ -148,7 +158,7 @@ app.get("/ds1/weapons/:id", function(req, res) {
 });
 
 app.get("/ds2/weapons/:id", function(req, res) {
-  db.collection(DS2_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 weapon");
     } else {
@@ -158,7 +168,7 @@ app.get("/ds2/weapons/:id", function(req, res) {
 });
 
 app.get("/ds3/weapons/:id", function(req, res) {
-  db.collection(DS3_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 weapon");
     } else {
@@ -171,7 +181,7 @@ app.put("/ds1/weapons/:id", function(req, res) {
   var updateDoc = req.body;
   delete updateDoc._id;
 
-  db.collection(DS1_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to update dark souls 1 weapon");
     } else {
@@ -184,7 +194,7 @@ app.put("/ds2/weapons/:id", function(req, res) {
   var updateDoc = req.body;
   delete updateDoc._id;
 
-  db.collection(DS2_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to update dark souls 2 weapon");
     } else {
@@ -197,7 +207,7 @@ app.put("/ds3/weapons/:id", function(req, res) {
   var updateDoc = req.body;
   delete updateDoc._id;
 
-  db.collection(DS3_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+  db.collection(DS_WEAPONS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to update dark souls 3 weapon");
     } else {
@@ -207,7 +217,7 @@ app.put("/ds3/weapons/:id", function(req, res) {
 });
 
 app.delete("/ds1/weapons/:id", function(req, res) {
-    db.collection(DS1_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    db.collection(DS_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
       handleError(res, err.message, "Failed to delete dark souls 1 weapon");
     } else {
@@ -217,7 +227,7 @@ app.delete("/ds1/weapons/:id", function(req, res) {
 });
 
 app.delete("/ds2/weapons/:id", function(req, res) {
-    db.collection(DS2_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    db.collection(DS_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
       handleError(res, err.message, "Failed to delete dark souls 2 weapon");
     } else {
@@ -227,7 +237,7 @@ app.delete("/ds2/weapons/:id", function(req, res) {
 });
 
 app.delete("/ds3/weapons/:id", function(req, res) {
-    db.collection(DS3_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    db.collection(DS_WEAPONS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
     if (err) {
       handleError(res, err.message, "Failed to delete dark souls 3 weapon");
     } else {
