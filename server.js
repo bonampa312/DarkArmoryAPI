@@ -522,7 +522,7 @@ app.post("/ds1/armors", function(req, res) {
 
 app.post("/ds2/armors", function(req, res) {
   var newArmor = req.body
-  if (!validatePostArmorsFields(newArmor)) {
+  if (!validatePostArmorsFields(newArmor) || !(newArmor.defenses.dark)) {
     handleError(res, "Invalid armor input", "Must provide requeried data for ds2 armor.", 400);
   }
   newArmor["game"] = "2"
@@ -537,7 +537,7 @@ app.post("/ds2/armors", function(req, res) {
 
 app.post("/ds3/armors", function(req, res) {
   var newArmor = req.body
-  if (!validatePostArmorsFields(newArmor)) {
+  if (!validatePostArmorsFields(newArmor) || !(newArmor.resistances.frost || newArmor.defenses.dark)) {
     handleError(res, "Invalid armor input", "Must provide requeried data for ds3 armor.", 400);
   }
   newArmor["game"] = "3"
