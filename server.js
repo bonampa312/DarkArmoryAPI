@@ -6,6 +6,7 @@ var ObjectID = mongodb.ObjectID;
 
 var DS_WEAPONS_COLLECTION = "weapons";
 var DS_RINGS_COLLECTION = "rings";
+var DS_ARMORS_COLLECTION = "armors";
 
 var app = express();
 app.use(express.static(__dirname + "/public"));
@@ -301,7 +302,7 @@ app.get("/ds3/rings", function(req, res) {
 app.post("/ds1/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing)) {
-   handleError(res, "Invalid weapon input", "Must provide requeried data for ds1 ring.", 400);
+   handleError(res, "Invalid ring input", "Must provide requeried data for ds1 ring.", 400);
   }
   newRing["game"] = "1"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
@@ -316,7 +317,7 @@ app.post("/ds1/rings", function(req, res) {
 app.post("/ds2/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing)) {
-    handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 ring.", 400);
+    handleError(res, "Invalid ring input", "Must provide requeried data for ds2 ring.", 400);
   }
   newRing["game"] = "2"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
@@ -331,7 +332,7 @@ app.post("/ds2/rings", function(req, res) {
 app.post("/ds3/rings", function(req, res) {
   var newRing = req.body
   if (!validatePostRingsFields(newRing)) {
-    handleError(res, "Invalid weapon input", "Must provide requeried data for ds3 ring.", 400);
+    handleError(res, "Invalid ring input", "Must provide requeried data for ds3 ring.", 400);
   }
   newRing["game"] = "3"
   db.collection(DS_RINGS_COLLECTION).insertOne(newRing,function(err, doc) {
@@ -453,6 +454,213 @@ app.delete("/ds3/rings/:id", function(req, res) {
 });
 
 /*
+ *            ARMORS
+*/
+
+/*
+ *    GET: finds all armors
+ *    POST: creates a new armor
+ * 
+ *    Dark Souls 1: "/ds1/armors"
+ *    Dark Souls 2: "/ds2/armors"
+ *    Dark Souls 3: "/ds3/armors"
+*/
+
+app.get("/ds1/armors", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1, "defenses":1, "weight":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 armors.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds2/armors", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).
+  find({game: "2"}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "weight":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 armors.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds3/armors", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).
+  find({game: "3"}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "weight":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 armors.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.post("/ds1/armors", function(req, res) {
+  var newArmor = req.body
+  if (!validatePostArmorsFields(newArmor)) {
+   handleError(res, "Invalid armor input", "Must provide requeried data for ds1 armor.", 400);
+  }
+  newArmor["game"] = "1"
+  db.collection(DS_ARMORS_COLLECTION).insertOne(newArmor,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 1 armor.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds2/armors", function(req, res) {
+  var newArmor = req.body
+  if (!validatePostArmorsFields(newArmor)) {
+    handleError(res, "Invalid armor input", "Must provide requeried data for ds2 armor.", 400);
+  }
+  newArmor["game"] = "2"
+  db.collection(DS_ARMORS_COLLECTION).insertOne(newArmor,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 2 armor.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds3/armors", function(req, res) {
+  var newArmor = req.body
+  if (!validatePostArmorsFields(newArmor)) {
+    handleError(res, "Invalid armor input", "Must provide requeried data for ds3 armor.", 400);
+  }
+  newArmor["game"] = "3"
+  db.collection(DS_ARMORS_COLLECTION).insertOne(newArmor,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 3 armor.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+/*
+ *    GET(by ID): finds a armor by id
+ *    PUT: update a armor by id
+ *    DELETE: deletes a armor by id
+ * 
+ *    Dark Souls 1: "/ds1/armors/:id"
+ *    Dark Souls 2: "/ds2/armors/:id"
+ *    Dark Souls 3: "/ds3/armors/:id"
+ */
+
+app.get("/ds1/armors/:id", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 armor");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds2/armors/:id", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 armor");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds3/armors/:id", function(req, res) {
+  db.collection(DS_ARMORS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 armor");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.put("/ds1/armors/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_ARMORS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 1 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds2/armors/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_ARMORS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 2 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds3/armors/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_ARMORS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 3 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds1/armors/:id", function(req, res) {
+    db.collection(DS_ARMORS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 1 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds2/armors/:id", function(req, res) {
+    db.collection(DS_ARMORS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 2 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds3/armors/:id", function(req, res) {
+    db.collection(DS_ARMORS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 3 armor");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+
+/*
  *
  *  Validations
  * 
@@ -499,6 +707,30 @@ function validatePostWeaponsFields(newWeapon) {
     newWeapon.defenses.magic ||
     newWeapon.defenses.lightning ||
     newWeapon.defenses.fire)) {
+      return false
+    } else {
+      return true
+    }
+}
+
+function validatePostArmorsFields(newArmor) {
+  if(!(newArmor.name ||
+    newArmor.weight ||
+    newArmor.description ||
+    newArmor.image_url ||
+    newArmor.locations ||
+    newArmor.poise ||
+    newArmor.effect ||
+    newArmor.resistances.bleed ||
+    newArmor.resistances.poison ||
+    newArmor.resistances.curse ||
+    newArmor.defenses.physical ||
+    newArmor.defenses.slash ||
+    newArmor.defenses.strike ||
+    newArmor.defenses.thrust ||
+    newArmor.defenses.magic ||
+    newArmor.defenses.lightning ||
+    newArmor.defenses.fire)) {
       return false
     } else {
       return true
