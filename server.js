@@ -7,6 +7,8 @@ var ObjectID = mongodb.ObjectID;
 var DS_WEAPONS_COLLECTION = "weapons";
 var DS_RINGS_COLLECTION = "rings";
 var DS_ARMORS_COLLECTION = "armors";
+var DS_SPELLS_COLLECTION = "spells";
+var DS_MISCS_COLLECTION = "miscs";
 
 var app = express();
 app.use(express.static(__dirname + "/public"));
@@ -55,8 +57,8 @@ function handleError(res, reason, message, code) {
 */
 
 app.get("/ds1/weapons", function(req, res) {
-  db.collection(DS_WEAPONS_COLLECTION)
-  .find({game: "1"}).
+  db.collection(DS_WEAPONS_COLLECTION).
+  find({game: "1"}).
   project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
   toArray(function(err, docs) {
     if (err) {
@@ -659,6 +661,418 @@ app.delete("/ds3/armors/:id", function(req, res) {
   });
 });
 
+/*
+ *            SPELLS
+*/
+
+/*
+ *    GET: finds all spells
+ *    POST: creates a new spell
+ * 
+ *    Dark Souls 1: "/ds1/spells"
+ *    Dark Souls 2: "/ds2/spells"
+ *    Dark Souls 3: "/ds3/spells"
+*/
+
+app.get("/ds1/spells", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requeriments":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 spells.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds2/spells", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).
+  find({game: "2"}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requeriments":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 spells.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds3/spells", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).
+  find({game: "3"}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"focus_points":1,"requeriments":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 spells.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.post("/ds1/spells", function(req, res) {
+  var newSpell = req.body
+  if (!validatePostSpellsFields(newSpell) || !(newSpell.uses)) {
+   handleError(res, "Invalid spell input", "Must provide requeried data for ds1 spell.", 400);
+  }
+  newSpell["game"] = "1"
+  db.collection(DS_SPELLS_COLLECTION).insertOne(newSpell,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 1 spell.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds2/spells", function(req, res) {
+  var newSpell = req.body
+  if (!validatePostSpellsFields(newSpell) || !(newSpell.uses)) {
+    handleError(res, "Invalid spell input", "Must provide requeried data for ds2 spell.", 400);
+  }
+  newSpell["game"] = "2"
+  db.collection(DS_SPELLS_COLLECTION).insertOne(newSpell,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 2 spell.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds3/spells", function(req, res) {
+  var newSpell = req.body
+  if (!validatePostSpellsFields(newSpell) || !(newSpell.focus_points)) {
+  handleError(res, "Invalid spell input", "Must provide requeried data for ds3 spell.", 400);
+  }
+  newSpell["game"] = "3"
+  db.collection(DS_SPELLS_COLLECTION).insertOne(newSpell,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 3 spell.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+/*
+ *    GET(by ID): finds a spell by id
+ *    PUT: update a spell by id
+ *    DELETE: deletes a spell by id
+ * 
+ *    Dark Souls 1: "/ds1/spells/:id"
+ *    Dark Souls 2: "/ds2/spells/:id"
+ *    Dark Souls 3: "/ds3/spells/:id"
+ */
+
+app.get("/ds1/spells/:id", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 spell");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds2/spells/:id", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 spell");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds3/spells/:id", function(req, res) {
+  db.collection(DS_SPELLS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 spell");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.put("/ds1/spells/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_SPELLS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 1 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds2/spells/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_SPELLS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 2 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds3/spells/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_SPELLS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 3 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds1/spells/:id", function(req, res) {
+    db.collection(DS_SPELLS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 1 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds2/spells/:id", function(req, res) {
+    db.collection(DS_SPELLS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 2 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds3/spells/:id", function(req, res) {
+    db.collection(DS_SPELLS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 3 spell");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+/*
+ *            MISCS
+*/
+
+/*
+ *    GET: finds all miscs
+ *    POST: creates a new misc
+ * 
+ *    Dark Souls 1: "/ds1/miscs"
+ *    Dark Souls 2: "/ds2/miscs"
+ *    Dark Souls 3: "/ds3/miscs"
+*/
+
+app.get("/ds1/miscs", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).
+  find({game: "1"}).
+  project({"_id":1, "name":1, "image_url":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 miscs.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds2/miscs", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).
+  find({game: "2"}).
+  project({"_id":1, "name":1, "image_url":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 miscs.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/ds3/miscs", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).
+  find({game: "3"}).
+  project({"_id":1, "name":1, "image_url":1}).
+  toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 miscs.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.post("/ds1/miscs", function(req, res) {
+  var newMisc = req.body
+  if (!validatePostMiscsFields(newMisc)) {
+   handleError(res, "Invalid misc input", "Must provide requeried data for ds1 misc.", 400);
+  }
+  newMisc["game"] = "1"
+  db.collection(DS_MISCS_COLLECTION).insertOne(newMisc,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 1 misc.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds2/miscs", function(req, res) {
+  var newMisc = req.body
+  if (!validatePostMiscsFields(newMisc)) {
+    handleError(res, "Invalid misc input", "Must provide requeried data for ds2 misc.", 400);
+  }
+  newMisc["game"] = "2"
+  db.collection(DS_MISCS_COLLECTION).insertOne(newMisc,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 2 misc.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.post("/ds3/miscs", function(req, res) {
+  var newMisc = req.body
+  if (!validatePostMiscsFields(newMisc)) {
+  handleError(res, "Invalid misc input", "Must provide requeried data for ds3 misc.", 400);
+  }
+  newMisc["game"] = "3"
+  db.collection(DS_MISCS_COLLECTION).insertOne(newMisc,function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new dark souls 3 misc.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+/*
+ *    GET(by ID): finds a misc by id
+ *    PUT: update a misc by id
+ *    DELETE: deletes a misc by id
+ * 
+ *    Dark Souls 1: "/ds1/miscs/:id"
+ *    Dark Souls 2: "/ds2/miscs/:id"
+ *    Dark Souls 3: "/ds3/miscs/:id"
+ */
+
+app.get("/ds1/miscs/:id", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 1 misc");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds2/miscs/:id", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 2 misc");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/ds3/miscs/:id", function(req, res) {
+  db.collection(DS_MISCS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get dark souls 3 misc");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.put("/ds1/miscs/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_MISCS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 1 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds2/miscs/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_MISCS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 2 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.put("/ds3/miscs/:id", function(req, res) {
+  var updateDoc = req.body;
+  delete updateDoc._id;
+
+  db.collection(DS_MISCS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update dark souls 3 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds1/miscs/:id", function(req, res) {
+    db.collection(DS_MISCS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 1 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds2/miscs/:id", function(req, res) {
+    db.collection(DS_MISCS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 2 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
+app.delete("/ds3/miscs/:id", function(req, res) {
+    db.collection(DS_MISCS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete dark souls 3 misc");
+    } else {
+      res.status(204).end();
+    }
+  });
+});
+
 
 /*
  *
@@ -731,6 +1145,37 @@ function validatePostArmorsFields(newArmor) {
     newArmor.defenses.magic ||
     newArmor.defenses.lightning ||
     newArmor.defenses.fire)) {
+      return false
+    } else {
+      return true
+    }
+}
+
+function validatePostSpellsFields(newSpell) {
+  if(!(newSpell.name ||
+    newSpell.spell_type ||
+    newSpell.description ||
+    newSpell.image_url ||
+    newSpell.locations ||
+    newSpell.slots ||
+    newSpell.requeriments.strength ||
+    newSpell.requeriments.dexterity ||
+    newSpell.requeriments.intelligence ||
+    newSpell.requeriments.faith
+    )) {
+      return false
+    } else {
+      return true
+    }
+}
+
+function validatePostMiscsFields(newMisc) {
+  if(!(newMisc.name ||
+    newMisc.description ||
+    newMisc.image_url ||
+    newMisc.locations ||
+    newMisc.effects
+    )) {
       return false
     } else {
       return true
