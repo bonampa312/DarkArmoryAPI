@@ -112,7 +112,7 @@ app.post("/ds1/weapons", function(req, res) {
 
 app.post("/ds2/weapons", function(req, res) {
   var newWeapon = req.body
-  if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.effect || newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
+  if (!validatePostWeaponsFields(newWeapon) || !(newWeapon.base_damage.dark || newWeapon.defenses.dark)) {
     handleError(res, "Invalid weapon input", "Must provide requeried data for ds2 weapon.", 400);
   }
   newWeapon["game"] = "2"
