@@ -471,7 +471,7 @@ app.delete("/ds3/rings/:id", function(req, res) {
 app.get("/ds1/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "1"}).
-  project({"_id":1, "name":1, "image_url":1, "defenses":1, "physical_defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1, "defenses":1, "physical_defenses":1, "type":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 armors.");
@@ -484,7 +484,7 @@ app.get("/ds1/armors", function(req, res) {
 app.get("/ds2/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "2"}).
-  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "type":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 armors.");
@@ -497,7 +497,7 @@ app.get("/ds2/armors", function(req, res) {
 app.get("/ds3/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "3"}).
-  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "type":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 armors.");
@@ -1135,6 +1135,7 @@ function validatePostArmorsFields(newArmor) {
     newArmor.locations ||
     newArmor.poise ||
     newArmor.effect ||
+    newArmor.type ||
     newArmor.resistances.bleed ||
     newArmor.resistances.poison ||
     newArmor.resistances.curse ||
