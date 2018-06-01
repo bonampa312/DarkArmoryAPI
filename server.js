@@ -59,7 +59,7 @@ function handleError(res, reason, message, code) {
 app.get("/ds1/weapons", function(req, res) {
   db.collection(DS_WEAPONS_COLLECTION).
   find({game: "1"}).
-  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 weapons.");
@@ -72,7 +72,7 @@ app.get("/ds1/weapons", function(req, res) {
 app.get("/ds2/weapons", function(req, res) {
   db.collection(DS_WEAPONS_COLLECTION).
   find({game: "2"}).
-  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 weapons.");
@@ -85,7 +85,7 @@ app.get("/ds2/weapons", function(req, res) {
 app.get("/ds3/weapons", function(req, res) {
   db.collection(DS_WEAPONS_COLLECTION).
   find({game: "3"}).
-  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"weight":1,"base_damage":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 weapons.");
@@ -677,7 +677,7 @@ app.delete("/ds3/armors/:id", function(req, res) {
 app.get("/ds1/spells", function(req, res) {
   db.collection(DS_SPELLS_COLLECTION).
   find({game: "1"}).
-  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 spells.");
@@ -690,7 +690,7 @@ app.get("/ds1/spells", function(req, res) {
 app.get("/ds2/spells", function(req, res) {
   db.collection(DS_SPELLS_COLLECTION).
   find({game: "2"}).
-  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"uses":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 spells.");
@@ -703,7 +703,7 @@ app.get("/ds2/spells", function(req, res) {
 app.get("/ds3/spells", function(req, res) {
   db.collection(DS_SPELLS_COLLECTION).
   find({game: "3"}).
-  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"focus_points":1,"requeriments":1}).
+  project({"_id":1, "name":1, "image_url":1,"spell_type":1,"slots":1,"focus_points":1,"requirements":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 spells.");
@@ -1109,10 +1109,10 @@ function validatePostWeaponsFields(newWeapon) {
     newWeapon.base_damage.magic ||
     newWeapon.base_damage.lightning ||
     newWeapon.base_damage.fire ||
-    newWeapon.requeriments.strength ||
-    newWeapon.requeriments.dexterity ||
-    newWeapon.requeriments.intelligence ||
-    newWeapon.requeriments.faith ||
+    newWeapon.requirements.strength ||
+    newWeapon.requirements.dexterity ||
+    newWeapon.requirements.intelligence ||
+    newWeapon.requirements.faith ||
     newWeapon.bonuses.strength ||
     newWeapon.bonuses.dexterity ||
     newWeapon.bonuses.intelligence ||
@@ -1151,7 +1151,7 @@ function validatePostArmorsFields(newArmor) {
       return true
     }
 }
-
+º
 function validatePostSpellsFields(newSpell) {
   if(!(newSpell.name ||
     newSpell.spell_type ||
@@ -1159,10 +1159,10 @@ function validatePostSpellsFields(newSpell) {
     newSpell.image_url ||
     newSpell.locations ||
     newSpell.slots ||
-    newSpell.requeriments.strength ||
-    newSpell.requeriments.dexterity ||
-    newSpell.requeriments.intelligence ||
-    newSpell.requeriments.faith
+    newSpell.requirements.strength ||
+    newSpell.requirements.dexterity ||
+    newSpell.requirements.intelligence ||
+    newSpell.requirements.faith
     )) {
       return false
     } else {
