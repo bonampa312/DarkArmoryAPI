@@ -1151,7 +1151,7 @@ function validatePostArmorsFields(newArmor) {
       return true
     }
 }
-º
+
 function validatePostSpellsFields(newSpell) {
   if(!(newSpell.name ||
     newSpell.spell_type ||
