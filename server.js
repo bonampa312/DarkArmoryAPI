@@ -50,7 +50,7 @@ function handleError(res, reason, message, code) {
 /*
  *    GET: finds all weapons
  *    POST: creates a new weapon
- * 
+ *
  *    Dark Souls 1: "/ds1/weapons"
  *    Dark Souls 2: "/ds2/weapons"
  *    Dark Souls 3: "/ds3/weapons"
@@ -144,7 +144,7 @@ app.post("/ds3/weapons", function(req, res) {
  *    GET(by ID): finds a weapon by id
  *    PUT: update a weapon by id
  *    DELETE: deletes a weapon by id
- * 
+ *
  *    Dark Souls 1: "/ds1/weapons/:id"
  *    Dark Souls 2: "/ds2/weapons/:id"
  *    Dark Souls 3: "/ds3/weapons/:id"
@@ -256,7 +256,7 @@ app.delete("/ds3/weapons/:id", function(req, res) {
 /*
  *    GET: finds all rings
  *    POST: creates a new ring
- * 
+ *
  *    Dark Souls 1: "/ds1/rings"
  *    Dark Souls 2: "/ds2/rings"
  *    Dark Souls 3: "/ds3/rings"
@@ -350,7 +350,7 @@ app.post("/ds3/rings", function(req, res) {
  *    GET(by ID): finds a ring by id
  *    PUT: update a ring by id
  *    DELETE: deletes a ring by id
- * 
+ *
  *    Dark Souls 1: "/ds1/rings/:id"
  *    Dark Souls 2: "/ds2/rings/:id"
  *    Dark Souls 3: "/ds3/rings/:id"
@@ -462,7 +462,7 @@ app.delete("/ds3/rings/:id", function(req, res) {
 /*
  *    GET: finds all armors
  *    POST: creates a new armor
- * 
+ *
  *    Dark Souls 1: "/ds1/armors"
  *    Dark Souls 2: "/ds2/armors"
  *    Dark Souls 3: "/ds3/armors"
@@ -471,7 +471,7 @@ app.delete("/ds3/rings/:id", function(req, res) {
 app.get("/ds1/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "1"}).
-  project({"_id":1, "name":1, "image_url":1, "defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1, "defenses":1, "physical_defenses":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 1 armors.");
@@ -484,7 +484,7 @@ app.get("/ds1/armors", function(req, res) {
 app.get("/ds2/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "2"}).
-  project({"_id":1, "name":1, "image_url":1,"defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 2 armors.");
@@ -497,7 +497,7 @@ app.get("/ds2/armors", function(req, res) {
 app.get("/ds3/armors", function(req, res) {
   db.collection(DS_ARMORS_COLLECTION).
   find({game: "3"}).
-  project({"_id":1, "name":1, "image_url":1,"defenses":1, "weight":1}).
+  project({"_id":1, "name":1, "image_url":1,"defenses":1, "physical_defenses":1, "weight":1}).
   toArray(function(err, docs) {
     if (err) {
       handleError(res, err.message, "Failed to get dark souls 3 armors.");
@@ -556,7 +556,7 @@ app.post("/ds3/armors", function(req, res) {
  *    GET(by ID): finds a armor by id
  *    PUT: update a armor by id
  *    DELETE: deletes a armor by id
- * 
+ *
  *    Dark Souls 1: "/ds1/armors/:id"
  *    Dark Souls 2: "/ds2/armors/:id"
  *    Dark Souls 3: "/ds3/armors/:id"
@@ -668,7 +668,7 @@ app.delete("/ds3/armors/:id", function(req, res) {
 /*
  *    GET: finds all spells
  *    POST: creates a new spell
- * 
+ *
  *    Dark Souls 1: "/ds1/spells"
  *    Dark Souls 2: "/ds2/spells"
  *    Dark Souls 3: "/ds3/spells"
@@ -762,7 +762,7 @@ app.post("/ds3/spells", function(req, res) {
  *    GET(by ID): finds a spell by id
  *    PUT: update a spell by id
  *    DELETE: deletes a spell by id
- * 
+ *
  *    Dark Souls 1: "/ds1/spells/:id"
  *    Dark Souls 2: "/ds2/spells/:id"
  *    Dark Souls 3: "/ds3/spells/:id"
@@ -874,7 +874,7 @@ app.delete("/ds3/spells/:id", function(req, res) {
 /*
  *    GET: finds all miscs
  *    POST: creates a new misc
- * 
+ *
  *    Dark Souls 1: "/ds1/miscs"
  *    Dark Souls 2: "/ds2/miscs"
  *    Dark Souls 3: "/ds3/miscs"
@@ -968,7 +968,7 @@ app.post("/ds3/miscs", function(req, res) {
  *    GET(by ID): finds a misc by id
  *    PUT: update a misc by id
  *    DELETE: deletes a misc by id
- * 
+ *
  *    Dark Souls 1: "/ds1/miscs/:id"
  *    Dark Souls 2: "/ds2/miscs/:id"
  *    Dark Souls 3: "/ds3/miscs/:id"
@@ -1077,7 +1077,7 @@ app.delete("/ds3/miscs/:id", function(req, res) {
 /*
  *
  *  Validations
- * 
+ *
  */
 
 function validatePostRingsFields(newRing) {
@@ -1138,10 +1138,10 @@ function validatePostArmorsFields(newArmor) {
     newArmor.resistances.bleed ||
     newArmor.resistances.poison ||
     newArmor.resistances.curse ||
+    newArmor.physical_defenses.slash ||
+    newArmor.physical_defenses.strike ||
+    newArmor.physical_defenses.thrust ||
     newArmor.defenses.physical ||
-    newArmor.defenses.slash ||
-    newArmor.defenses.strike ||
-    newArmor.defenses.thrust ||
     newArmor.defenses.magic ||
     newArmor.defenses.lightning ||
     newArmor.defenses.fire)) {
